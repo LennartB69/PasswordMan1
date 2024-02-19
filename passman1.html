@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Password Manager</h1>
+    <div id="loginPage" class="page">
+      <h2>Login</h2>
+      <input type="text" id="loginUsername" placeholder="Username">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button onclick="login()">Login</button>
+    </div>
+    <div id="registerPage" class="page">
+      <h2>Register</h2>
+      <input type="text" id="registerUsername" placeholder="Username">
+      <input type="password" id="registerPassword" placeholder="Password">
+      <button onclick="register()">Register</button>
+    </div>
+    <div id="dashboardPage" class="page" style="display: none;">
+      <h2>Dashboard</h2>
+      <input type="text" id="url" placeholder="Website URL">
+      <input type="password" id="sitePassword" placeholder="Password">
+      <button onclick="savePassword()">Save Password</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.page {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>
+<script>
+const users = [];
+
+let currentUser = null;
+
+function login() {
+  const usernameInput = document.getElementById("loginUsername").value;
+  const passwordInput = document.getElementById("loginPassword").value;
+
+  const user = users.find(user => user.username === usernameInput && user.password === passwordInput);
+
+  if (user) {
+    currentUser = user;
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("registerPage").style.display = "none";
+    document.getElementById("dashboardPage").style.display = "block";
+    document.getElementById("url").focus();
+  } else {
+    alert("Invalid username or password");
+  }
+}
+
+function register() {
+  const usernameInput = document.getElementById("registerUsername").value;
+  const passwordInput = document.getElementById("registerPassword").value;
+
+  if (usernameInput && passwordInput) {
+    if (!users.find(user => user.username === usernameInput)) {
+      users.push({ username: usernameInput, password: passwordInput, passwords: [] });
+      alert("Registration successful. Please login.");
+      switchPage("loginPage");
+    } else {
+      alert("Username already exists. Please choose a different one.");
+    }
+  } else {
+    alert("Please enter a username and password.");
+  }
+}
+
+function savePassword() {
+  if (!currentUser) {
+    alert("Please login first");
+    return;
+  }
+
+  const urlInput = document.getElementById("url").value;
+  const passwordInput = document.getElementById("sitePassword").value;
+
+  if (urlInput && passwordInput) {
+    currentUser.passwords.push({ url: urlInput, password: passwordInput });
+    alert("Password saved successfully!");
+    document.getElementById("url").value = "";
+    document.getElementById("sitePassword").value = "";
+    document.getElementById("url").focus();
+  } else {
+    alert("Please enter website URL and password.");
+  }
+}
+
+function logout() {
+  currentUser = null;
+  switchPage("loginPage");
+}
+
+function switchPage(pageId) {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("registerPage").style.display = "none";
+  document.getElementById("dashboardPage").style.display = "none";
+  document.getElementById(pageId).style.display = "block";
+}
+</script>
